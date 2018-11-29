@@ -18,9 +18,8 @@ var connection = mysql.createConnection({
 });
 
 // needs a constructor for orders
-function Order(name, amount){
+function Order(name){
     this.name = name;
-    this.amount = amount;
 }
 
 connection.connect(function(err) {
@@ -49,7 +48,7 @@ function whatProduct(){
     // need to show table of products
     connection.query("SELECT product_name FROM products", function (err, resp) {
         if (err) throw err;
-        console.log(resp);
+        // console.log(resp);
         // prompt will ask what item the user wants to buy
         // will probably want to use lists for this to avoid the user 
         inquirer.prompt([
@@ -65,30 +64,18 @@ function whatProduct(){
                 answer.name,
             );
             console.log("You would like " + order.name);
-            howMany();
+            // once user has selected an item, will trigger how many
+            howMany(order.name);
         })
     });
 
-    function howMany(){
-        connection.query("SELECT * FROM products", function (err, resp) {
+    function howMany(prod){
+        connection.query("SELECT * FROM products WHERE product_name = '" + prod + "'", function (err, resp) {
             if (err) throw err;
+            console.table(resp);
+            // how many the store has should subtrat how many the user buys, if the user buys too many, the transaction should not go through
             connection.end();
         })
     }
-    // prompt questions for the user, these should determine what the user wants and how many they want
-    // inquirer.prompt([{
-    //     name: "name",
-    //     message: "What would you like to buy?"
-    // },{
-    //     name: "amount",
-    //     message: "How many would you like?"
-    // }
-    // ]).then(function(answers){
-    //     // test that the answers are prompted
-    //     var order = new Order(
-    //         answers.name,
-    //         parseInt(answers.amount)
-    //     );
-    //     console.log("Your order is: " + order.amount + " " + order.name);
-    // })
+    
 };
