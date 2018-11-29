@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const cTable = require('console.table');
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -25,7 +26,7 @@ function Order(name, amount){
 connection.connect(function(err) {
     if (err) throw err;
     // console.log("connected as id " + connection.threadId);
-    connection.end();
+    promptCustomerQuery();
 });
 
 function promptCustomerQuery() {
@@ -36,22 +37,58 @@ Welcome to bamazon!
 ----------
 `
     );
-    // prompt questions for the user, these should determine what the user wants and how many they want
-    inquirer.prompt([{
-        name: "name",
-        message: "What would you like to buy?"
-    },{
-        name: "amount",
-        message: "How many would you like?"
-    }
-    ]).then(function(answers){
-        // test that the answers are prompted
-        var order = new Order(
-            answers.name,
-            parseInt(answers.amount)
-        );
-        console.log("Your order is: " + order.amount + " " + order.name);
+    // need to show table of products
+    connection.query("SELECT * FROM products", function (err, resp) {
+        if (err) throw err;
+        console.table(resp);
+        whatProduct();
     })
-};
+}
 
-promptCustomerQuery();
+function whatProduct(){
+    // need to show table of products
+    connection.query("SELECT product_name FROM products", function (err, resp) {
+        if (err) throw err;
+        console.log(resp);
+        // prompt will ask what item the user wants to buy
+        // will probably want to use lists for this to avoid the user 
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "name",
+                // choices needs to be the available products
+                choices: resp.map(r => r.product_name),
+                message: "What would you like to buy?"
+            }
+        ]).then(function(answer){
+            var order = new Order(
+                answer.name,
+            );
+            console.log("You would like " + order.name);
+            howMany();
+        })
+    });
+
+    function howMany(){
+        connection.query("SELECT * FROM products", function (err, resp) {
+            if (err) throw err;
+            connection.end();
+        })
+    }
+    // prompt questions for the user, these should determine what the user wants and how many they want
+    // inquirer.prompt([{
+    //     name: "name",
+    //     message: "What would you like to buy?"
+    // },{
+    //     name: "amount",
+    //     message: "How many would you like?"
+    // }
+    // ]).then(function(answers){
+    //     // test that the answers are prompted
+    //     var order = new Order(
+    //         answers.name,
+    //         parseInt(answers.amount)
+    //     );
+    //     console.log("Your order is: " + order.amount + " " + order.name);
+    // })
+};
