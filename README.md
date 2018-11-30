@@ -10,7 +10,8 @@ to use first, you will have to
 
 since you will need the dependecies for mysql, console.table, and inquirer.
 
-Next you will need to provide user and password information for the server, schema and seed info are provided in the repository
+Next you will need to provide user and password information for the server, schema and seed info are provided in the repository,
+simply copy and paste schema and seeds into your mysql database and it should work just fine.
 
 # using the storefront
 
