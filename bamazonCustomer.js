@@ -6,12 +6,12 @@ var connection = mysql.createConnection({
     host: "localhost",
 
     // need user since my server seems to require it
-    user: "root",
+    user: "",
     // port
     port: 3306,
 
-    // password
-    password: "EpicGis20",
+    // password also needed
+    password: "",
 
     // name of the database I want to show
     database: "bamazon_customerDB"
