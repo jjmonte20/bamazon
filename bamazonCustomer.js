@@ -83,7 +83,8 @@ function whatProduct(){
             ]).then(function(answer){
                 // the function here should first determine here if there is enough inventory to buy the item
                 var newAmount = resp[0].stock_quantity - parseInt(answer.amount);
-                console.log(prod);
+                var total = resp[0].price * parseInt(answer.amount);
+                // console.log(prod);
                 // if the user tries to buy too many, the console should have a no prompt and then re ask the question
                 if (newAmount < 0) {
                     console.log("We do not have enough of that item, please select a lower amount");
@@ -101,7 +102,16 @@ function whatProduct(){
                         }
                     ], function(err, res) {
                         if (err) throw err;
-                        console.log(res);
+                        console.log(
+`
+---------------------
+Transaction completed
+Amount due: ${total} Dollar(s)
+Thank you for shopping at Bamazon!
+---------------------
+`
+                        )
+                        connection.end();
                     })
                     // total should be price multiplied by amount that was determined by the answer in the inquirer
                 }
